@@ -1,0 +1,4 @@
+YouTube Data API v3
+---------------------
+
+"Requests to retrieve playlist details (playlists.list) for a channel's watch history or watch later playlist will return an empty list after September 12, 2016. Requests to retrieve playlist items (playlistItems.list) in either of those playlists will also return an empty list after that time. This is true for the new values, HL and WL, as well as for any watch history or watch later playlist IDs that your API Client may have already stored."
