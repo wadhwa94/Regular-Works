@@ -3,10 +3,12 @@ import facebook
 import requests
 import ast
 import json
-
+outputDict = {}
 api_key = "____________________________";
 response_playlistID = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=UCuaQuGfEQS1pSVpf_I-Hj5w&key=" + api_key) 
 # print (response_playlistID.text)
+outputDict["unavailableVideos"] = 0
+outputDict["AvailableVideos"] = 0
 response_playlistID_jsonData = json.loads(response_playlistID.text)
 # print (response_playlistID_jsonData)
 # print(len(response_playlistID_jsonData))
@@ -29,21 +31,33 @@ print ("Jatin Wadhwa")
 # print (responseVideosID_jsonData.keys())
 print (int(responseVideosID_jsonData['pageInfo']['totalResults']))
 if int(responseVideosID_jsonData['pageInfo']['totalResults']) > 0:
-		print (len(responseVideosID_jsonData['items']))
-		# for i in range(0,len(responseVideosID_jsonData['items'])):
-		for i in range(0,1):
-			print (responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'])
+		# print (len(responseVideosID_jsonData['items']))
+		# print ("Jatin Wadhwa")
+		for i in range(0,len(responseVideosID_jsonData['items'])):
+			# print (responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'])
 			responseVideoContent = requests.get("https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'] + " &key=" + api_key)
 			responseVideosContent_jsonData = json.loads(responseVideoContent.text)
-			print (responseVideosContent_jsonData['items'][0]['snippet']['categoryId'])
+			if len(responseVideosContent_jsonData['items']) > 0: 
+				   print (responseVideosContent_jsonData['items'][0]['snippet']['categoryId'])
+				   responseVideoCategoryContent = requests.get("https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&id="+ responseVideosContent_jsonData['items'][0]['snippet']['categoryId'] +"&key=" + api_key)
+				   responseVideoCategoryContent_jsonData = json.loads(responseVideoCategoryContent.text)
+				   print (responseVideoCategoryContent_jsonData['items'][0]['snippet']['title'])
+				   if responseVideoCategoryContent_jsonData['items'][0]['snippet']['title'] in outputDict:
+				      outputDict[responseVideoCategoryContent_jsonData['items'][0]['snippet']['title']] = int(outputDict[responseVideoCategoryContent_jsonData['items'][0]['snippet']['title']]) + 1
+				      outputDict["AvailableVideos"]	= outputDict["AvailableVideos"] + 1
+				   else:
+				      outputDict[responseVideoCategoryContent_jsonData['items'][0]['snippet']['title']] = 1
+				      outputDict["AvailableVideos"]	= outputDict["AvailableVideos"] + 1
 
-			responseVideoCategoryContent = requests.get("https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&id="+ responseVideosContent_jsonData['items'][0]['snippet']['categoryId'] +"&key=" + api_key)
-			responseVideoCategoryContent_jsonData = json.loads(responseVideoCategoryContent.text)
-			
- 
+		
+
+			else:
+				   print ("Video Unavailable with Video Id - "+ responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'])
+				   outputDict["unavailableVideos"] = outputDict["unavailableVideos"] + 1	
 		# print (responseVideosID_jsonData['items'][0].keys())
 		# for x in range(0,2):
-
+		print (outputDict.keys())
+		print (outputDict)		
 		print ("Videos Fetched")
 		#fetch all the videos from here
 		# while()
@@ -56,6 +70,26 @@ if int(responseVideosID_jsonData['pageInfo']['totalResults']) > 0:
 		   print('nextPageToken' in responseVideosID_jsonData)
 		   print ("Videos Fetched")
 		   #fetch videos
+		   for i in range(0,len(responseVideosID_jsonData['items'])):
+               # print (responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'])
+			   responseVideoContent = requests.get("https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'] + " &key=" + api_key)
+			   responseVideosContent_jsonData = json.loads(responseVideoContent.text)
+			   if len(responseVideosContent_jsonData['items']) > 0: 
+				   print (responseVideosContent_jsonData['items'][0]['snippet']['categoryId'])
+				   responseVideoCategoryContent = requests.get("https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&id="+ responseVideosContent_jsonData['items'][0]['snippet']['categoryId'] +"&key=" + api_key)
+				   responseVideoCategoryContent_jsonData = json.loads(responseVideoCategoryContent.text)
+				   print (responseVideoCategoryContent_jsonData['items'][0]['snippet']['title'])
+				   if responseVideoCategoryContent_jsonData['items'][0]['snippet']['title'] in outputDict:
+				      outputDict[responseVideoCategoryContent_jsonData['items'][0]['snippet']['title']] = int(outputDict[responseVideoCategoryContent_jsonData['items'][0]['snippet']['title']]) + 1
+				      outputDict["AvailableVideos"]	= outputDict["AvailableVideos"] + 1
+
+				   else:
+				      outputDict[responseVideoCategoryContent_jsonData['items'][0]['snippet']['title']] = 1
+				      outputDict["AvailableVideos"]	= outputDict["AvailableVideos"] + 1
+
+			   else:
+				   print ("Video Unavailable with Video Id - "+ responseVideosID_jsonData['items'][i]['snippet']['resourceId']['videoId'])
+				   outputDict["unavailableVideos"] = outputDict["unavailableVideos"] + 1	
 
 
 # #r = requests.get("https://graph.facebook.com/me/friends?access_token=" + token)
