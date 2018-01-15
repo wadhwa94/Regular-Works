@@ -1,0 +1,73 @@
+from bs4 import BeautifulSoup
+# import urllib.request
+import requests
+
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from lxml import html
+from bs4 import BeautifulSoup
+import time
+# driver = webdriver.PhantomJS()
+# driver.get("http://google.com")
+
+# This will get the initial html - before javascript
+# html1 = driver.page_source
+
+# This will get the html after on-load javascript
+# html2 = driver.execute_script("return document.documentElement.innerHTML;")
+
+
+# or you can use Chrome(executable_path="/usr/bin/chromedriver")
+chrome_options = webdriver.ChromeOptions()
+prefs = {"profile.default_content_setting_values.notifications" : 2}
+chrome_options.add_experimental_option("prefs",prefs)
+driver = webdriver.Chrome(r"C:\Users\_______\Downloads\chromedriver_win32\chromedriver.exe",chrome_options=chrome_options)
+f = open('helloworld.txt','w')
+		
+for i in range(1,20):
+	url = "http://______________/" + str(i)
+	driver.get(url)
+	f.write(url + '\n')
+	print (url) # elem = driver.find_element_by_tag_name("body")
+
+	# print (type(elem))
+	# print (elem)
+	# This will get the initial html - before javascript
+	#html1 = driver.page_source
+	# print (html1.encode("utf-8"))
+	# This will get the html after on-load javascript
+	time.sleep(15)
+
+	html2 = driver.execute_script("return document.documentElement.innerHTML;")
+	# print (type(html2))
+
+	soup = BeautifulSoup(html2, 'html.parser')
+	# print (soup.encode("utf-8"))
+
+	mydivs2 = soup.find_all("h2", {"class": "detail-title"})
+	if len(mydivs2) > 0:
+		f.write(mydivs2[0].text + '\n')
+		print (mydivs2[0].text)
+	else:
+		f.write('Not found Name (Absent)\n')
+		print ("Not found Name (Absent)")
+
+
+	mydivs1 = soup.find_all("div", {"class": "detail-banner-address"})
+	# print (mydivs1[0])
+	# print (type(mydivs1[0]))
+	if len(mydivs1) > 0:
+		f.write(mydivs1[0].a.get_text() +  '\n')
+		print (mydivs1[0].a.get_text())
+	else:
+		f.write('Not found Address (Absent)\n')
+		print ("Not found Address (Absent)")
+	# soup1 = BeautifulSoup(mydivs1[0], 'html.parser')
+	# print (soup1.find_all('a'))
+	#driver.stop()
+	# driver.quit()
+	# webdriver.quit()
+	f.write('\n \n')
+f.close()
+driver.quit()	
